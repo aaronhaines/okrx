@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { FeedbackDisplay } from "./components/FeedbackDisplay";
 import { KeyResultInput } from "./components/KeyResultInput";
+import { OKRReview } from "./components/OKRReview";
 import { getObjectiveFeedback } from "./services/aiService";
 import "./App.css";
+
+type Stage = "objective" | "key-results" | "review";
 
 type Feedback = {
   quality: "good" | "needs-improvement" | "poor";
@@ -13,9 +16,10 @@ type Feedback = {
 function App() {
   const [objective, setObjective] = useState("");
   const [feedback, setFeedback] = useState<Feedback>(null);
-  const [stage, setStage] = useState<"objective" | "key-results">("objective");
+  const [stage, setStage] = useState<Stage>("objective");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [keyResults, setKeyResults] = useState<Array<{ text: string }>>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +55,23 @@ function App() {
   const handleImprovedVersionSelect = (improvedVersion: string) => {
     setObjective(improvedVersion);
     // Optionally, you could trigger a new feedback request here
+  };
+
+  const moveToReview = (results: Array<{ text: string }>) => {
+    setKeyResults(results);
+    setStage("review");
+  };
+
+  const backToKeyResults = () => {
+    setStage("key-results");
+  };
+
+  const handleFinalize = () => {
+    // TODO: Handle OKR finalization (e.g., save to database, share, etc.)
+    console.log("Final OKR:", {
+      objective,
+      keyResults,
+    });
   };
 
   return (
@@ -89,8 +110,19 @@ function App() {
             </div>
           )}
         </>
+      ) : stage === "key-results" ? (
+        <KeyResultInput
+          objective={objective}
+          onBack={backToObjective}
+          onComplete={moveToReview}
+        />
       ) : (
-        <KeyResultInput objective={objective} onBack={backToObjective} />
+        <OKRReview
+          objective={objective}
+          keyResults={keyResults}
+          onBack={backToKeyResults}
+          onSubmit={handleFinalize}
+        />
       )}
     </div>
   );

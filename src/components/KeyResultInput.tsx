@@ -5,6 +5,7 @@ interface KeyResultFeedback {
   quality: "good" | "needs-improvement" | "poor";
   message: string;
   suggestions: string[];
+  improvements?: string[];
 }
 
 interface KeyResult {
@@ -15,31 +16,46 @@ interface KeyResult {
 interface KeyResultInputProps {
   objective: string;
   onBack: () => void;
+  onComplete: (results: Array<{ text: string }>) => void;
 }
 
-export function KeyResultInput({ objective, onBack }: KeyResultInputProps) {
+export function KeyResultInput({
+  objective,
+  onBack,
+  onComplete,
+}: KeyResultInputProps) {
   const [keyResults, setKeyResults] = useState<KeyResult[]>([
     { text: "", feedback: null },
   ]);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (activeIndex === null) return;
+    if (keyResults.every((kr) => !kr.text.trim())) return;
+
+    // Filter out empty key results and only include the text
+    const validResults = keyResults
+      .filter((kr) => kr.text.trim())
+      .map((kr) => ({ text: kr.text }));
+
+    onComplete(validResults);
+  };
+
+  const getFeedback = async (index: number) => {
+    if (!keyResults[index].text.trim()) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await getKeyResultFeedback(
-        keyResults[activeIndex].text,
+        keyResults[index].text,
         objective
       );
 
       const newKeyResults = [...keyResults];
-      newKeyResults[activeIndex].feedback = response;
+      newKeyResults[index].feedback = response;
       setKeyResults(newKeyResults);
     } catch (err) {
       setError("Failed to get AI feedback. Please try again.");
@@ -55,8 +71,7 @@ export function KeyResultInput({ objective, onBack }: KeyResultInputProps) {
   ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      setActiveIndex(index);
-      handleSubmit(e as unknown as FormEvent);
+      getFeedback(index);
     }
   };
 
@@ -73,6 +88,18 @@ export function KeyResultInput({ objective, onBack }: KeyResultInputProps) {
     };
     setKeyResults(newKeyResults);
   };
+
+  const handleImprovedVersionSelect = (index: number, improvement: string) => {
+    const newKeyResults = [...keyResults];
+    newKeyResults[index] = {
+      ...newKeyResults[index],
+      text: improvement,
+      feedback: null,
+    };
+    setKeyResults(newKeyResults);
+  };
+
+  const canProceed = keyResults.some((kr) => kr.feedback?.quality === "good");
 
   return (
     <form className="key-results-section" onSubmit={handleSubmit}>
@@ -94,7 +121,15 @@ export function KeyResultInput({ objective, onBack }: KeyResultInputProps) {
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 placeholder="Example: Increase user activation rate from 25% to 50% by Q3"
                 rows={2}
+                disabled={isLoading}
               />
+              <button
+                type="button"
+                onClick={() => getFeedback(index)}
+                disabled={isLoading || !kr.text.trim()}
+              >
+                {isLoading ? "Getting Feedback..." : "Get Feedback"}
+              </button>
             </div>
             {kr.feedback && (
               <div
@@ -111,6 +146,26 @@ export function KeyResultInput({ objective, onBack }: KeyResultInputProps) {
                     </ul>
                   </div>
                 )}
+                {kr.feedback.improvements &&
+                  kr.feedback.improvements.length > 0 && (
+                    <div className="feedback-improvements">
+                      <h4>Try these improved versions:</h4>
+                      <div className="improvement-options">
+                        {kr.feedback.improvements.map((improvement, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className="improvement-option"
+                            onClick={() =>
+                              handleImprovedVersionSelect(index, improvement)
+                            }
+                          >
+                            {improvement}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
               </div>
             )}
           </div>
@@ -120,15 +175,16 @@ export function KeyResultInput({ objective, onBack }: KeyResultInputProps) {
         </button>
       </div>
 
+      {error && <div className="error-message">{error}</div>}
+
       <div className="actions">
         <button type="button" onClick={onBack} className="back-button">
           Back to Objective
         </button>
-        <button type="submit" className="submit-button" disabled={isLoading}>
-          {isLoading ? "Getting Feedback..." : "Review OKR"}
+        <button type="submit" className="submit-button" disabled={!canProceed}>
+          Review OKR
         </button>
       </div>
-      {error && <div className="error-message">{error}</div>}
     </form>
   );
 }
