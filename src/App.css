@@ -291,3 +291,34 @@ button:disabled {
 button:disabled:hover {
   background-color: #4a90e2;
 }
+
+/* Add these new styles */
+.feedback-improvements {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.improvement-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.improvement-option {
+  text-align: left;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #333;
+}
+
+.improvement-option:hover {
+  background: #fff;
+  border-color: #4a90e2;
+  color: #4a90e2;
+}

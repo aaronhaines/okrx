@@ -48,6 +48,11 @@ function App() {
     }
   };
 
+  const handleImprovedVersionSelect = (improvedVersion: string) => {
+    setObjective(improvedVersion);
+    // Optionally, you could trigger a new feedback request here
+  };
+
   return (
     <div className="container">
       {stage === "objective" ? (
@@ -72,7 +77,10 @@ function App() {
             </button>
           </form>
           {error && <div className="error-message">{error}</div>}
-          <FeedbackDisplay feedback={feedback} />
+          <FeedbackDisplay
+            feedback={feedback}
+            onSelectImprovement={handleImprovedVersionSelect}
+          />
           {feedback?.quality === "good" && (
             <div className="next-step">
               <button onClick={moveToKeyResults}>
