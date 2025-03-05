@@ -566,3 +566,112 @@ button:disabled:hover {
   background-color: #f8f9fa;
   border-left: 4px solid;
 }
+
+/* Add these styles for the OKR list */
+.okr-list {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.okr-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.okr-list-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.create-button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-button:hover {
+  background-color: #357abd;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
+}
+
+.okr-cards {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.okr-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.okr-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.okr-card-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.okr-card-section {
+  margin-bottom: 1.5rem;
+}
+
+.okr-card-section h4 {
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+}
+
+.okr-card-section ol,
+.okr-card-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.okr-card-section li {
+  margin-bottom: 0.75rem;
+}
+
+.okr-card-section li:last-child {
+  margin-bottom: 0;
+}
+
+.jira-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+.jira-link:hover {
+  text-decoration: underline;
+}

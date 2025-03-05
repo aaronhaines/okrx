@@ -4,9 +4,10 @@ import { KeyResultInput } from "./components/KeyResultInput";
 import { InitiativeInput } from "./components/InitiativeInput";
 import { OKRReview } from "./components/OKRReview";
 import { getObjectiveFeedback } from "./services/aiService";
+import { OKRList } from "./components/OKRList";
 import "./App.css";
 
-type Stage = "objective" | "key-results" | "initiatives" | "review";
+type Stage = "list" | "objective" | "key-results" | "initiatives" | "review";
 
 type Feedback = {
   quality: "good" | "needs-improvement" | "poor";
@@ -26,14 +27,25 @@ interface Initiative {
   } | null;
 }
 
+interface OKR {
+  objective: string;
+  keyResults: Array<{ text: string }>;
+  initiatives: Array<Initiative>;
+  createdAt: string;
+}
+
 function App() {
   const [objective, setObjective] = useState("");
   const [feedback, setFeedback] = useState<Feedback>(null);
-  const [stage, setStage] = useState<Stage>("objective");
+  const [stage, setStage] = useState<Stage>("list");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [keyResults, setKeyResults] = useState<Array<{ text: string }>>([]);
   const [initiatives, setInitiatives] = useState<Array<Initiative>>([]);
+  const [okrs, setOkrs] = useState<OKR[]>(() => {
+    const stored = localStorage.getItem("okrs");
+    return stored ? JSON.parse(stored) : [];
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,20 +93,38 @@ function App() {
   };
 
   const handleFinalize = () => {
-    // TODO: Handle OKR finalization (e.g., save to database, share, etc.)
-    console.log("Final OKR:", {
+    const finalOKR = {
       objective,
       keyResults,
-    });
+      initiatives,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedOkrs = [...okrs, finalOKR];
+    setOkrs(updatedOkrs);
+    localStorage.setItem("okrs", JSON.stringify(updatedOkrs));
+
+    // Reset the form
+    setObjective("");
+    setFeedback(null);
+    setKeyResults([]);
+    setInitiatives([]);
+    setStage("list");
   };
 
   const backToKeyResults = () => {
     setStage("key-results");
   };
 
+  const startNewOKR = () => {
+    setStage("objective");
+  };
+
   return (
     <div className="container">
-      {stage === "objective" ? (
+      {stage === "list" ? (
+        <OKRList okrs={okrs} onCreateNew={startNewOKR} />
+      ) : stage === "objective" ? (
         <>
           <form className="okr-form" onSubmit={handleSubmit}>
             <div className="input-group">
