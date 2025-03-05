@@ -480,3 +480,89 @@ button:disabled:hover {
   outline: none;
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
 }
+
+/* Add styles for initiatives section */
+.initiatives-section {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.initiative-group {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.initiative-group .input-group {
+  margin-bottom: 1rem;
+}
+
+.initiative-group input[type="text"],
+.initiative-group input[type="url"] {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.initiative-group input:focus,
+.initiative-group textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.add-initiative-button {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: none;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-initiative-button:hover {
+  border-color: #4a90e2;
+  color: #4a90e2;
+  background-color: #f8f9fa;
+}
+
+.feedback-button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.feedback-button:hover:not(:disabled) {
+  background-color: #357abd;
+}
+
+.feedback-button:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+.initiative-feedback {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  border-left: 4px solid;
+}

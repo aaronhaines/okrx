@@ -98,7 +98,9 @@ export function InitiativeInput({
     const newInitiatives = [...initiatives];
     newInitiatives[index] = {
       ...newInitiatives[index],
-      text: improvement,
+      text: newInitiatives[index].text,
+      description: improvement,
+      jiraLink: newInitiatives[index].jiraLink,
       feedback: null,
     };
     setInitiatives(newInitiatives);
