@@ -1,17 +1,30 @@
 import { useState } from "react";
 import { FeedbackDisplay } from "./components/FeedbackDisplay";
 import { KeyResultInput } from "./components/KeyResultInput";
+import { InitiativeInput } from "./components/InitiativeInput";
 import { OKRReview } from "./components/OKRReview";
 import { getObjectiveFeedback } from "./services/aiService";
 import "./App.css";
 
-type Stage = "objective" | "key-results" | "review";
+type Stage = "objective" | "key-results" | "initiatives" | "review";
 
 type Feedback = {
   quality: "good" | "needs-improvement" | "poor";
   message: string;
   suggestions: string[];
 } | null;
+
+interface Initiative {
+  text: string;
+  description: string;
+  jiraLink: string;
+  feedback: {
+    quality: "good" | "needs-improvement" | "poor";
+    message: string;
+    suggestions: string[];
+    improvements?: string[];
+  } | null;
+}
 
 function App() {
   const [objective, setObjective] = useState("");
@@ -20,6 +33,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [keyResults, setKeyResults] = useState<Array<{ text: string }>>([]);
+  const [initiatives, setInitiatives] = useState<Array<Initiative>>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +71,13 @@ function App() {
     // Optionally, you could trigger a new feedback request here
   };
 
-  const moveToReview = (results: Array<{ text: string }>) => {
+  const moveToInitiatives = (results: Array<{ text: string }>) => {
     setKeyResults(results);
-    setStage("review");
+    setStage("initiatives");
   };
 
-  const backToKeyResults = () => {
-    setStage("key-results");
+  const backToInitiatives = () => {
+    setStage("initiatives");
   };
 
   const handleFinalize = () => {
@@ -72,6 +86,10 @@ function App() {
       objective,
       keyResults,
     });
+  };
+
+  const backToKeyResults = () => {
+    setStage("key-results");
   };
 
   return (
@@ -114,13 +132,24 @@ function App() {
         <KeyResultInput
           objective={objective}
           onBack={backToObjective}
-          onComplete={moveToReview}
+          onComplete={moveToInitiatives}
+        />
+      ) : stage === "initiatives" ? (
+        <InitiativeInput
+          objective={objective}
+          keyResults={keyResults}
+          onBack={backToKeyResults}
+          onComplete={(initiatives) => {
+            setInitiatives(initiatives);
+            setStage("review");
+          }}
         />
       ) : (
         <OKRReview
           objective={objective}
           keyResults={keyResults}
-          onBack={backToKeyResults}
+          initiatives={initiatives}
+          onBack={backToInitiatives}
           onSubmit={handleFinalize}
         />
       )}
